@@ -49,4 +49,6 @@ public class VehicleDto {
 		items.AddRange(colors.Select(c => new SelectListItem(c, c, c == selectedColor)));
 		return items;
 	}
+
+	public override string ToString() => $"{Registration} ({ModelCode}, {Color}, {Year})";
 }
