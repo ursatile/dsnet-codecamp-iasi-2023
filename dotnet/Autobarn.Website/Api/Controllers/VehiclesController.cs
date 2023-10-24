@@ -1,10 +1,15 @@
+using System;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Autobarn.Data;
 using Autobarn.Data.Entities;
+using Autobarn.Messages;
 using Microsoft.AspNetCore.Mvc;
 using Autobarn.Website.Models;
 using Castle.Core.Logging;
+using EasyNetQ;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.Extensions.Logging;
 
@@ -15,10 +20,15 @@ namespace Autobarn.Website.Api.Controllers;
 [ApiController]
 public class VehiclesController : ControllerBase {
 	private readonly IAutobarnDatabase db;
+	private readonly IBus bus;
 	private readonly ILogger<VehiclesController> logger;
 
-	public VehiclesController(IAutobarnDatabase db, ILogger<VehiclesController> logger) {
+	public VehiclesController(
+		IAutobarnDatabase db,
+		IBus bus,
+		ILogger<VehiclesController> logger) {
 		this.db = db;
+		this.bus = bus;
 		this.logger = logger;
 	}
 
@@ -70,9 +80,7 @@ public class VehiclesController : ControllerBase {
 
 	// POST api/vehicles
 	[HttpPost]
-	// [DisableCors]
-
-	public IActionResult Post([FromBody] VehicleDto dto) {
+	public async Task<IActionResult> Post([FromBody] VehicleDto dto) {
 		var existing = db.FindVehicle(dto.Registration);
 		if (existing != default) {
 			logger.LogInformation("409 Conflict: POST /api/vehicles: {vehicle}", dto);
@@ -86,10 +94,29 @@ public class VehiclesController : ControllerBase {
 			Year = dto.Year,
 			VehicleModel = vehicleModel
 		};
+
 		db.CreateVehicle(vehicle);
+		await PublishNewVehicleNotification(vehicle);
+
 		logger.LogInformation("201 Created: POST /api/vehicles: {vehicle}", dto);
 		return Created($"/api/vehicles/{vehicle.Registration}", vehicle);
 	}
+
+	private async Task PublishNewVehicleNotification(Vehicle vehicle) {
+		
+		var message = new NewVehicleMessage {
+			Registration = vehicle.Registration,
+			Make = vehicle.VehicleModel?.Manufacturer?.Name ?? "(missing)",
+			Model = vehicle.VehicleModel?.Name ?? "(missing)",
+			Color = vehicle.Color,
+			Year = vehicle.Year,
+			ListedAt = DateTimeOffset.UtcNow
+		};
+		await bus.PubSub.PublishAsync(message);
+
+	}
+
+
 
 	// PUT api/vehicles/ABC123
 	[HttpPut("{id}")]

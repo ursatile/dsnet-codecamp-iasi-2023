@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using EasyNetQ;
 using Microsoft.OpenApi.Models;
 
 namespace Autobarn.Website;
@@ -35,16 +36,11 @@ public class Startup {
 		services.AddSwaggerGenNewtonsoftSupport();
 
 		services.AddRazorPages().AddRazorRuntimeCompilation();
-		Console.WriteLine(DatabaseMode);
-		switch (DatabaseMode) {
-			case "sql":
-				var sqlConnectionString = Configuration.GetConnectionString("AutobarnSqlConnectionString");
-				services.UseAutobarnSqlDatabase(sqlConnectionString);
-				break;
-			default:
-				services.AddSingleton<IAutobarnDatabase, AutobarnCsvFileDatabase>();
-				break;
-		}
+		
+		services.AddSingleton<IAutobarnDatabase, AutobarnCsvFileDatabase>();
+		var amqpConnectionString = Configuration.GetConnectionString("rabbitmq_autobarn");
+		var bus = RabbitHutch.CreateBus(amqpConnectionString);
+		services.AddSingleton(bus);
 	}
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

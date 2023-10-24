@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>34c0a4ac-3c3f-4e00-8c6c-34cc5a2ded73</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EasyNetQ" Version="7.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
@@ -13,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Autobarn.Data\Autobarn.Data.csproj" />
+    <ProjectReference Include="..\Autobarn.Messages\Autobarn.Messages.csproj" />
   </ItemGroup>
 
 </Project>
