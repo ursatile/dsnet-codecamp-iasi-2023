@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using Microsoft.OpenApi.Models;
 
-namespace Autobarn.Website; 
+namespace Autobarn.Website;
 
 public class Startup {
 	protected virtual string DatabaseMode => Configuration["DatabaseMode"];
@@ -30,6 +30,8 @@ public class Startup {
 				Description = "The Autobarn vehicle platform API"
 			});
 		});
+		// explicit opt-in - needs to be placed after AddSwaggerGen().
+		services.AddSwaggerGenNewtonsoftSupport();
 
 		services.AddRazorPages().AddRazorRuntimeCompilation();
 		Console.WriteLine(DatabaseMode);
@@ -62,7 +64,7 @@ public class Startup {
 		app.UseSwagger();
 		// ...and the SwaggerUI interactive API tooling.
 		app.UseSwaggerUI();
-				
+
 		app.UseEndpoints(endpoints => {
 			endpoints.MapControllerRoute(
 				name: "default",

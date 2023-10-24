@@ -24,8 +24,8 @@ public class Program {
 					webBuilder.ConfigureKestrel(options => {
 						var pfxPassword = Environment.GetEnvironmentVariable("UrsatilePfxPassword");
 						var https = UseCertIfAvailable(@"D:\Dropbox\workshop.ursatile.com\workshop.ursatile.com.pfx", pfxPassword);
-						options.ListenAnyIP(5000, listenOptions => listenOptions.Protocols = HttpProtocols.Http1AndHttp2);
-						options.Listen(IPAddress.Any, 5001, https);
+						options.ListenAnyIP(5050, listenOptions => listenOptions.Protocols = HttpProtocols.Http1AndHttp2);
+						options.Listen(IPAddress.Any, 5051, https);
 						options.AllowSynchronousIO = true;
 					});
 					webBuilder.UseStartup<Startup>();
