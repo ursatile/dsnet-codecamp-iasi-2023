@@ -7,6 +7,7 @@ using Autobarn.Data;
 using Autobarn.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Autobarn.Website.Models;
+using Microsoft.CodeAnalysis;
 
 namespace Autobarn.Website.Api.Controllers {
 	[Route("api/[controller]")]
@@ -44,6 +45,24 @@ namespace Autobarn.Website.Api.Controllers {
 				items,
 			};
 		}
+
+
+		[HttpGet("{id}")]
+		public object Get(string id) {
+			var vehicle = db.FindVehicle(id);
+			if (vehicle == default) return NotFound($"Sorry, there's no vehicle matching {id}");
+			var result = vehicle.ToDynamic();
+			result._links = new {
+				model = new {
+					href = $"/api/models/{vehicle.ModelCode}"
+				},
+				self = new {
+					href = $"/api/vehicles/{id}"
+				}
+			};
+			return result;
+		}
+
 
 		// POST api/vehicles
 		[HttpPost]
