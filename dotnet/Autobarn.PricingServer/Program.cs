@@ -4,12 +4,10 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => {
-
 	static Action<ListenOptions> UseCertIfAvailable(string pfxFilePath, string pfxPassword) {
 		if (File.Exists(pfxFilePath)) return listen => listen.UseHttps(pfxFilePath, pfxPassword);
 		return listen => listen.UseHttps();
 	}
-
 	var pfxPassword = Environment.GetEnvironmentVariable("UrsatilePfxPassword") ?? String.Empty;
 	var pfxFilePath = @"D:\Dropbox\workshop.ursatile.com\workshop.ursatile.com.pfx";
 	var https = UseCertIfAvailable(pfxFilePath, pfxPassword);
