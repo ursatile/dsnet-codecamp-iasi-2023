@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using Autobarn.Website.GraphQL.GraphTypes;
 using Autobarn.Website.GraphQL.Schemas;
+using Autobarn.Website.Hubs;
 using EasyNetQ;
 using GraphQL;
 using GraphQL.Types;
@@ -47,6 +48,8 @@ public class Startup {
 		var bus = RabbitHutch.CreateBus(amqpConnectionString);
 		services.AddSingleton(bus);
 
+		services.AddSignalR();
+
 		services.AddGraphQL(builder => builder
 		   //.AddHttpMiddleware<ISchema>()
 		   .AddNewtonsoftJson()
@@ -78,6 +81,7 @@ public class Startup {
 		app.UseGraphiQl("/graphiql");
 
 		app.UseEndpoints(endpoints => {
+			endpoints.MapHub<AutobarnHub>("/hub");
 			endpoints.MapControllerRoute(
 				name: "default",
 				pattern: "{controller=Home}/{action=Index}/{id?}");
