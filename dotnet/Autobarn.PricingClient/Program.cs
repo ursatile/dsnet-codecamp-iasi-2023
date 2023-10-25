@@ -2,18 +2,10 @@ using Autobarn.Messages;
 using Autobarn.Pricing;
 using Autobarn.PricingClient;
 using EasyNetQ;
-using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NAudio.Wave;
-
-using (var waveOut = new WaveOutEvent())
-using (var wavReader = new WaveFileReader(@"boing.wav")) {
-	waveOut.Init(wavReader);
-	waveOut.Play();
-}
 
 var builder = Host.CreateDefaultBuilder()
 	.ConfigureLogging((_, logging) => {
