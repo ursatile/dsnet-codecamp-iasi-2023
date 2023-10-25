@@ -20,12 +20,13 @@ class PricingService : IHostedService {
 	}
 
 	public async Task StartAsync(CancellationToken cancellationToken) {
-		logger.LogInformation("Subscribing to NewVehicleMessage");
+		logger.LogInformation("Subscribing to NewVehicleMessage...");
 		await bus.PubSub.SubscribeAsync<NewVehicleMessage>(
 			$"autobarn.auditlog@{Environment.MachineName}",
 			Handle,
 			cancellationToken
 		);
+		logger.LogInformation("Subscribed! Waiting for messages...");
 	}
 
 	public Task StopAsync(CancellationToken cancellationToken) {
@@ -41,7 +42,7 @@ class PricingService : IHostedService {
 			Model = message.Model
 		};
 		var priceReply = await pricer.GetPriceAsync(request);
-		logger.LogInformation("{price} {currencyCode}", priceReply.Price, priceReply.CurrencyCode);
+		logger.LogInformation("REPLY: {price} {currencyCode}", priceReply.Price, priceReply.CurrencyCode);
 		// 3: ???
 	}
 }
