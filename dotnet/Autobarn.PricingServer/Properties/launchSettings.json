@@ -1,0 +1,13 @@
+﻿{
+  "profiles": {
+    "Autobarn.PricingServer": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5227;https://localhost:7289",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
