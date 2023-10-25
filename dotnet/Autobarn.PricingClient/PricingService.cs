@@ -45,6 +45,8 @@ class PricingService : IHostedService {
 		};
 		var priceReply = await pricer.GetPriceAsync(request);
 		logger.LogInformation("REPLY: {price} {currencyCode}", priceReply.Price, priceReply.CurrencyCode);
-		// 3: ???
+
+		var newVehiclePriceMessage = message.WithPrice(priceReply.Price, priceReply.CurrencyCode);
+		await bus.PubSub.PublishAsync(newVehiclePriceMessage);
 	}
 }

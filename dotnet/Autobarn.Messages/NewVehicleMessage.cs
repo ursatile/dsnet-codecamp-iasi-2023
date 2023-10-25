@@ -13,4 +13,22 @@ public class NewVehicleMessage {
 
 	public override string ToString()
 		=> $"{Registration} ({Make} {Model}, {Color}, {Year}) - listed at {ListedAt:O}";
+
+	public NewVehiclePriceMessage WithPrice(int price, string currencyCode)
+		=> new () {
+			Color = this.Color,
+			Year = this.Year,
+			ListedAt = this.ListedAt,
+			Make = this.Make,
+			Model = this.Model,
+			Registration = this.Registration,
+			CurrencyCode = currencyCode,
+			Price = price
+		};
+}
+
+public class NewVehiclePriceMessage : NewVehicleMessage {
+	public int Price { get; set; }
+	public string CurrencyCode { get; set; } = String.Empty;
+
 }
