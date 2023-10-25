@@ -3,6 +3,7 @@ using Autobarn.Pricing;
 using EasyNetQ;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NAudio.Wave;
 
 namespace Autobarn.PricingClient; 
 
@@ -35,6 +36,13 @@ class PricingService : IHostedService {
 
 	public async Task Handle(NewVehicleMessage message) {
 		logger.LogInformation("NewVehicleMessage: {message}", message);
+
+
+		using (var waveOut = new WaveOutEvent())
+		using (var wavReader = new WaveFileReader(@"boing.wav")) {
+			waveOut.Init(wavReader);
+			waveOut.Play();
+		}
 		var request = new PriceRequest {
 			Year = message.Year,
 			Color = message.Color,
