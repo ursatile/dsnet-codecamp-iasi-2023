@@ -5,8 +5,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using Autobarn.Website.GraphQL.GraphTypes;
+using Autobarn.Website.GraphQL.Schemas;
 using EasyNetQ;
+using GraphQL;
+using GraphQL.Types;
 using Microsoft.OpenApi.Models;
+using GraphiQl;
 
 namespace Autobarn.Website;
 
@@ -36,11 +41,18 @@ public class Startup {
 		services.AddSwaggerGenNewtonsoftSupport();
 
 		services.AddRazorPages().AddRazorRuntimeCompilation();
-		
+
 		services.AddSingleton<IAutobarnDatabase, AutobarnCsvFileDatabase>();
 		var amqpConnectionString = Configuration.GetConnectionString("rabbitmq_autobarn");
 		var bus = RabbitHutch.CreateBus(amqpConnectionString);
 		services.AddSingleton(bus);
+
+		services.AddGraphQL(builder => builder
+		   //.AddHttpMiddleware<ISchema>()
+		   .AddNewtonsoftJson()
+		   .AddSchema<AutobarnSchema>()
+		   .AddGraphTypes(typeof(VehicleGraphType).Assembly)
+	   );
 	}
 
 	public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
@@ -61,6 +73,9 @@ public class Startup {
 		app.UseSwagger();
 		// ...and the SwaggerUI interactive API tooling.
 		app.UseSwaggerUI();
+
+		app.UseGraphQL<ISchema>();
+		app.UseGraphiQl("/graphiql");
 
 		app.UseEndpoints(endpoints => {
 			endpoints.MapControllerRoute(

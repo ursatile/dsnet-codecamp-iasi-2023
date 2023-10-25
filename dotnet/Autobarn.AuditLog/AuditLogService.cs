@@ -17,7 +17,7 @@ class AuditLogService : IHostedService {
 	public async Task StartAsync(CancellationToken cancellationToken) {
 		logger.LogInformation("Subscribing to NewVehicleMessage");
 		await bus.PubSub.SubscribeAsync<NewVehicleMessage>(
-			"autobarn.auditlog",
+			$"autobarn.auditlog@{Environment.MachineName}",
 			Handle,
 			cancellationToken
 		);
